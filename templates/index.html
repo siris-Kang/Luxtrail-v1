@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxTrail</title>
+</head>
+<body>
+  <h2>유저 스트릭 확인</h2>
+  <input type="text" class="usernameInput" placeholder="백준 아이디">
+  <button onclick="checkUser()">확인</button>
+
+  <div id="result" style="margin-top: 20px;"></div>
+
+  <script>
+    async function checkUser() {
+        const username = document.querySelector(".usernameInput").value;
+        const resultDiv = document.getElementById("result");
+
+        const res = await fetch(`http://localhost:8000/submissions/${username}`);
+        const data = await res.json();
+        console.log(data);
+
+        resultDiv.innerHTML = `
+        <p><strong>유저명:</strong> ${data.user}</p>
+        <img src="${data.profileImg}" width="100" alt="프로필"><br>
+        <p><strong>오늘 푼 문제 수:</strong> ${data.problems.length}개</p>
+        <p>${data.problems.length > 0 ? "✅ 오늘 문제 풀었음!" : "❌ 오늘 아직 안 풀었음"}</p>
+        <p><strong>문제 목록:</strong> ${data.problems.join(", ")}</p>
+        `;
+    }
+    </script>
+
+</body>
+</html>

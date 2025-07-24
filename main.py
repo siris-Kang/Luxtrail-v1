@@ -4,8 +4,18 @@ import httpx
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 import time # time 모듈 import
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 개발 중엔 *로 열어두기
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # To avoid Detection of Backjoon site
 headers = {
@@ -74,11 +84,12 @@ def get_today_accepted_problems(user_id: str, date: str):
                     try:
                         timestamp = int(timestamp_str)
 
-                        if (datetime.utcfromtimestamp(timestamp) + timedelta(hours=9)).date() != now_kst.date():
+                        submit_date = datetime.fromtimestamp(timestamp, tz=kst).date()
+                        if submit_date != now_kst.date():
                             continue
                         result_td = cols[3]
                         result_span = result_td.find("span")
-                        if not result_span or "시간 초과" not in result_span.text:
+                        if not result_span or "맞았습니다!!" not in result_span.text:
                             continue
                         
                         # 맞은 문제 리스트에 추가
@@ -101,8 +112,33 @@ def get_today_accepted_problems(user_id: str, date: str):
     print(f"DEBUG: 검색 완료. 최종 찾은 문제들: {list(problems)}")
     return list(problems)
 
+def get_solvedac_user_info(username):
+    url = f"https://solved.ac/profile/{username}"
+    headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "Connection": "keep-alive"
+    }
+
+    res = httpx.get(url, headers=headers)
+
+    if res.status_code != 200:
+        print("요청 실패:", res.status_code)
+        return None
+
+    soup = BeautifulSoup(res.text, "html.parser")
+
+    # 프로필 이미지 찾기 (alt=유저 이름인 img)
+    profile_img_tag = soup.find("img", {"alt": username})
+    profile_img = profile_img_tag["src"] if profile_img_tag else None
+
+    return profile_img
+
 
 @app.get("/submissions/{user_id}")
 def get_today(user_id: str):
     problems = get_today_accepted_problems(user_id, today)
-    return {"date": today, "user": user_id, "problems": problems}
+    user_img = get_solvedac_user_info(user_id)
+    return {"date": today, "user": user_id, "problems": problems, "profileImg": user_img}
+
