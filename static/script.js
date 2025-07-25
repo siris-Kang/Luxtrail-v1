@@ -10,15 +10,15 @@ window.onload = () => {
 function loadSaved() {
     const saved = localStorage.getItem("usernames");
     if (!saved) {
-        alert("저장된 계정이 없습니다!");
+        alert("저장된 계정이 없습니다");
         return;
     }
     document.querySelector(".usernameInput").value = saved;
     checkUsers(saved);
 }
 
+const profileCache = {}; // user profileImg 저장
 
-// GET 버튼 누르면 저장도 같이
 async function checkUsers(inputText = null) {
     const input = inputText || document.querySelector(".usernameInput").value;
     const usernames = input.split(",").map(u => u.trim()).filter(u => u);
@@ -29,43 +29,60 @@ async function checkUsers(inputText = null) {
         return;
     }
 
-    // 저장
     localStorage.setItem("usernames", input);
 
-    container.innerHTML = "";
-
+    // 기존 카드 유지하고, 텍스트만 업데이트
     for (const username of usernames) {
+        let card = document.getElementById(`user-card-${username}`);
+
         try {
             const res = await fetch(`http://localhost:8000/submissions/${username}`);
             const data = await res.json();
 
-            if (!data.profileImg) {
-                throw new Error(`유저 ${username}의 이미지가 없습니다.`);
+            // 이미지 캐싱
+            if (!profileCache[username]) {
+                profileCache[username] = data.profileImg;
             }
 
-            const card = document.createElement("div");
-            card.className = "user-card";
-            card.innerHTML = `
-                <img src="${data.profileImg}" alt="프로필 이미지" />
+            const problemList = data.problems.join(", ");
+            const solved = data.problems.length > 0;
+
+            const cardHTML = `
                 <p><strong>${data.user}</strong></p>
                 <p>오늘 푼 문제 수: ${data.problems.length}개</p>
-                <p style="color: ${data.problems.length > 0 ? 'green' : 'red'};">
-                    ${data.problems.length > 0 ? "오늘 문제 풀었어!" : "얼른 문제 푸세요!"}
+                <p style="color: ${solved ? 'green' : 'red'};">
+                    ${solved ? "오늘 문제 풀었어!" : "얼른 문제 푸세요!"}
                 </p>
-                <p>${data.problems.join(", ")}</p>
+                <p>${problemList}</p>
             `;
-            container.appendChild(card);
+
+            // 카드 없으면 새로 생성
+            if (!card) {
+                card = document.createElement("div");
+                card.className = "user-card";
+                card.id = `user-card-${username}`;
+                card.innerHTML = `<img src="${profileCache[username]}" alt="프로필 이미지" />` + cardHTML;
+                container.appendChild(card);
+            } else {
+                // 기존 카드 내용만 업데이트
+                card.innerHTML = `<img src="${profileCache[username]}" alt="프로필 이미지" />` + cardHTML;
+            }
+
         } catch (err) {
-            const errorCard = document.createElement("div");
-            errorCard.className = "user-card";
-            errorCard.innerHTML = `
-                <p><strong>${username}</strong></p>
-                <p style="color: red;">정보를 불러오지 못했어요.</p>
-            `;
-            container.appendChild(errorCard);
+            if (!card) {
+                const errorCard = document.createElement("div");
+                errorCard.className = "user-card";
+                errorCard.id = `user-card-${username}`;
+                errorCard.innerHTML = `
+                    <p><strong>${username}</strong></p>
+                    <p style="color: red;">정보를 불러오지 못했어요.</p>
+                `;
+                container.appendChild(errorCard);
+            }
         }
     }
 }
+
 
 async function checkProblem() {
     const problemId = document.querySelector(".problemInput").value.trim();

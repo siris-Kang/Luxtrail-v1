@@ -11,7 +11,8 @@
     <h2 class="page-title">Check your streak</h2>
 
     <div class="page-info">
-      <!-- 왼쪽: 유저 입력 & 결과 -->
+      
+      <!-- 왼쪽: 유저 정보 -->
       <div class="left-column">
         <div class="user-controls">
           <div class="user-input-box">
@@ -20,13 +21,13 @@
           </div>
           <div class="user-past-info-box">
             <button class="load-btn" onclick="loadSaved()">저장된 계정 불러오기</button>
-            <button class="reset-btn" onclick="clearSaved()">계정 초기화</button>
+            <button class="reset-btn" onclick="clearSaved()">저장된 계정 초기화</button>
           </div>
         </div>
         <div class="result-container"></div>
       </div>
 
-      <!-- 오른쪽: 문제 체크 & 결과 -->
+      <!-- 오른쪽: 문제 체크 -->
       <div class="right-column">
         <div class="problem-check">
           <h3># Problem check</h3>
@@ -36,7 +37,6 @@
         <div class="problem-result"></div>
       </div>
     </div>
-
   </div>
 
   <script src="../static/script.js"></script>

@@ -5,6 +5,22 @@ body {
   background-color: #f9f9f9;
 }
 
+button {
+  padding: 10px 16px;
+  font-size: 16px;
+  margin: 5px;
+  cursor: pointer;
+  background-color: #ffcc00;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #e6b800;
+}
+
 .page-wrapper {
   max-width: 1300px;
   margin: auto;
@@ -27,6 +43,7 @@ body {
   align-items: flex-start;
 }
 
+
 .left-column, .right-column {
   display: flex;
   flex-direction: column;
@@ -34,30 +51,14 @@ body {
   flex: 1;
 }
 
-.usernameInput {
-  padding: 10px;
-  font-size: 16px;
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.user-controls button,
+.problem-check button {
+  margin-left: 5px;
+  margin-top: 10px;
 }
 
-button {
-  padding: 10px 16px;
-  font-size: 16px;
-  margin: 5px;
-  cursor: pointer;
-  background-color: #ffcc00;  /* 진한 노란색 */
-  color: black;
-  border: none;
-  border-radius: 5px;
-  font-weight: bold;
-}
 
-button:hover {
-  background-color: #e6b800;
-}
-
+/* 왼쪽: 유저 정보 */
 .user-controls {
   display: flex;
   flex-direction: column;
@@ -71,12 +72,22 @@ button:hover {
   gap: 10px;
 }
 
+.usernameInput {
+  padding: 10px;
+  font-size: 16px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* 저장된 유저 정보 관리 */
 .user-past-info-box {
   display: flex;
   flex-direction: row;
   gap: 10px;
 }
 
+/* 문제 체크 */
 .problem-check {
   margin-bottom: 30px;
 }
@@ -89,10 +100,15 @@ button:hover {
   border-radius: 5px;
 }
 
-.user-controls button,
-.problem-check button {
-  margin-left: 5px;
-  margin-top: 10px;
+
+/* result에서 읽어오는 정보 */
+.result-container,
+.problem-result {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
 }
 
 .profile-img {
@@ -148,13 +164,4 @@ button:hover {
   object-fit: cover;
   border-radius: 50%;
   margin-bottom: 10px;
-}
-
-.result-container,
-.problem-result {
-  margin-top: 30px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
 }
