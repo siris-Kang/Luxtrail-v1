@@ -1,18 +1,122 @@
+// 자동 실행 제거
+window.onload = () => {
+    const saved = localStorage.getItem("usernames");
+    if (saved) {
+        document.querySelector(".usernameInput").value = saved;
+        // checkUsers(saved); 자동 실행 제거
+    }
+};
 
-async function checkUser() {
-    const username = document.querySelector(".usernameInput").value;
-    const resultDiv = document.querySelector(".result");
+function loadSaved() {
+    const saved = localStorage.getItem("usernames");
+    if (!saved) {
+        alert("저장된 계정이 없습니다!");
+        return;
+    }
+    document.querySelector(".usernameInput").value = saved;
+    checkUsers(saved);
+}
 
-    // fetch: JS(Front)에서 웹 API(Back)에 요청을 보내는 함수
-    const getResponse = await fetch(`http://localhost:8000/submissions/${username}`);
-    
-    const data = await getResponse.json(); // JS 객체로 파싱
 
-    resultDiv.innerHTML = `
-    <p><strong>User:</strong> ${data.user}</p>
-    <img src="${data.profileImg}" width="100" alt="프로필"><br>
-    <p><strong>오늘 푼 문제 수:</strong> ${data.problems.length}개</p>
-    <p>${data.problems.length > 0 ? "오늘 문제 풀었어!" : "얼른 문제 푸세요!"}</p>
-    <p><strong>문제 목록:</strong> ${data.problems.join(", ")}</p>
-    `;
+// GET 버튼 누르면 저장도 같이
+async function checkUsers(inputText = null) {
+    const input = inputText || document.querySelector(".usernameInput").value;
+    const usernames = input.split(",").map(u => u.trim()).filter(u => u);
+    const container = document.querySelector(".result-container");
+
+    if (usernames.length === 0 || usernames.length > 10) {
+        alert("1명 이상, 최대 10명까지 입력해주세요!");
+        return;
+    }
+
+    // 저장
+    localStorage.setItem("usernames", input);
+
+    container.innerHTML = "";
+
+    for (const username of usernames) {
+        try {
+            const res = await fetch(`http://localhost:8000/submissions/${username}`);
+            const data = await res.json();
+
+            if (!data.profileImg) {
+                throw new Error(`유저 ${username}의 이미지가 없습니다.`);
+            }
+
+            const card = document.createElement("div");
+            card.className = "user-card";
+            card.innerHTML = `
+                <img src="${data.profileImg}" alt="프로필 이미지" />
+                <p><strong>${data.user}</strong></p>
+                <p>오늘 푼 문제 수: ${data.problems.length}개</p>
+                <p style="color: ${data.problems.length > 0 ? 'green' : 'red'};">
+                    ${data.problems.length > 0 ? "오늘 문제 풀었어!" : "얼른 문제 푸세요!"}
+                </p>
+                <p>${data.problems.join(", ")}</p>
+            `;
+            container.appendChild(card);
+        } catch (err) {
+            const errorCard = document.createElement("div");
+            errorCard.className = "user-card";
+            errorCard.innerHTML = `
+                <p><strong>${username}</strong></p>
+                <p style="color: red;">정보를 불러오지 못했어요.</p>
+            `;
+            container.appendChild(errorCard);
+        }
+    }
+}
+
+async function checkProblem() {
+    const problemId = document.querySelector(".problemInput").value.trim();
+    const saved = localStorage.getItem("usernames");
+    const resultDiv = document.querySelector(".problem-result");
+
+    if (!saved || !problemId) {
+        alert("계정과 문제 번호를 입력해주세요!");
+        return;
+    }
+
+    const users = saved;
+    resultDiv.innerHTML = "";
+
+    try {
+        const res = await fetch(`http://localhost:8000/problem_check/${problemId}?users=${users}`);
+        const data = await res.json();
+
+        // 제목 카드
+        const title = document.createElement("div");
+        title.innerHTML = `<h3>문제 ${data.problem}번</h3>`;
+        title.style.width = "100%";
+        title.style.textAlign = "center";
+        resultDiv.appendChild(title);
+
+        for (const item of data.results) {
+            const card = document.createElement("div");
+            card.className = "problem-card";
+            const emoji = item.solved ? "✅" : "❌";
+            const msg = item.solved ? "풀었음" : "안 풀었음";
+            const reaction = item.solved
+                ? `<p style="color: green;">멋져요!!</p>`
+                : `<p style="color: red;">얼른 문제 푸세요!</p>`;
+
+            card.innerHTML = `
+                <p><strong>${item.user}</strong></p>
+                <p style="font-size: 20px;">${emoji} ${msg}</p>
+                ${reaction}
+            `;
+            resultDiv.appendChild(card);
+        }
+
+
+    } catch (err) {
+        resultDiv.innerHTML = "<p style='color:red;'>오류 발생: " + err.message + "</p>";
+    }
+}
+
+
+function clearSaved() {
+    localStorage.removeItem("usernames");
+    document.querySelector(".usernameInput").value = "";
+    document.querySelector(".result-container").innerHTML = "";
 }

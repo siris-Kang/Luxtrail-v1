@@ -7,12 +7,37 @@
   <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-  <h2 class="page-title">Check your streak</h2>
+  <div class="page-wrapper">
+    <h2 class="page-title">Check your streak</h2>
 
-  <input type="text" class="usernameInput" placeholder="Input your User Name" />
-  <button onclick="checkUser()">GET</button>
+    <div class="page-info">
+      <!-- 왼쪽: 유저 입력 & 결과 -->
+      <div class="left-column">
+        <div class="user-controls">
+          <div class="user-input-box">
+            <input type="text" class="usernameInput" placeholder="쉼표로 구분해 아이디 입력 (최대 10명)" />
+            <button class="get-btn" onclick="checkUsers()">GET</button>
+          </div>
+          <div class="user-past-info-box">
+            <button class="load-btn" onclick="loadSaved()">저장된 계정 불러오기</button>
+            <button class="reset-btn" onclick="clearSaved()">계정 초기화</button>
+          </div>
+        </div>
+        <div class="result-container"></div>
+      </div>
 
-  <div class="result"></div>
+      <!-- 오른쪽: 문제 체크 & 결과 -->
+      <div class="right-column">
+        <div class="problem-check">
+          <h3># Problem check</h3>
+          <input type="text" class="problemInput" placeholder="문제 번호 입력 (예: 1000)" />
+          <button onclick="checkProblem()">문제 체크</button>
+        </div>
+        <div class="problem-result"></div>
+      </div>
+    </div>
+
+  </div>
 
   <script src="../static/script.js"></script>
 </body>

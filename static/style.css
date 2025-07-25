@@ -5,10 +5,33 @@ body {
   background-color: #f9f9f9;
 }
 
+.page-wrapper {
+  max-width: 1300px;
+  margin: auto;
+  padding: 20px;
+}
+
 .page-title {
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
+
+  padding-top: 50px;
+  padding-bottom: 100px;
+}
+
+.page-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.left-column, .right-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
 }
 
 .usernameInput {
@@ -22,22 +45,54 @@ body {
 button {
   padding: 10px 16px;
   font-size: 16px;
-  margin-left: 10px;
+  margin: 5px;
   cursor: pointer;
-  background-color: #007bff;
-  color: white;
+  background-color: #ffcc00;  /* 진한 노란색 */
+  color: black;
   border: none;
   border-radius: 5px;
+  font-weight: bold;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: #e6b800;
 }
 
-.result {
-  margin-top: 30px;
+.user-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px; /* 간격 */
+}
+
+.user-input-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.user-past-info-box {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.problem-check {
+  margin-bottom: 30px;
+}
+
+.problemInput {
+  padding: 10px;
   font-size: 16px;
-  color: #222;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.user-controls button,
+.problem-check button {
+  margin-left: 5px;
+  margin-top: 10px;
 }
 
 .profile-img {
@@ -55,4 +110,51 @@ button:hover {
   font-size: 18px;
   font-weight: bold;
   color: green;
+}
+
+.user-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  width: 200px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.user-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.problem-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  width: 200px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-size: 15px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.problem-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.result-container,
+.problem-result {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
 }
